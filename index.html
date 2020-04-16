@@ -16,28 +16,26 @@
         <div class="side" id="two"></div>
     </div>
 
-
-
-
     <div id="modal-intro" class="modal-container">
         <div class="modal">
             <div id="game-start" class="modal-component">
                 <h2>Click here to play!</h2>
             </div>
         </div>
+    </div>
 
-        <div id="results-board" class="modal-container">
-            <div class="modal">
-                <div class="modal-component">
-                    <h1>Player Two Wins!</h1>
-                </div>
-                <div class="modal-component">
-                    <h2>Play Again!</h2>
-                </div>
+    <div id="results-board" class="modal-container">
+        <div class="modal">
+            <div class="modal-component">
+                <h1>Player {PLAYER NUMBER} Wins!</h1>
+                <h3>Player 1 Score: {PLAYER ONE SCORE} | Player 2 Score: {PLAYER TWO SCORE}</h3>
+            </div>
+            <div id="initiate-round-btn" class="modal-component">
+                <h2>Play Again!</h2>
             </div>
         </div>
+    </div>
 
-        <script src='./code.js'></script>
+    <script src='./code.js'></script>
 </body>
-
 </html>
