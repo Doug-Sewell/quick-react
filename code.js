@@ -1,91 +1,200 @@
-let score1 = 0;
-let score2 = 0;
+{
+    let score1 = 0;
+    let score2 = 0;
+    let boardWillReact = true;
 
-//Targets the page's modal on page load
-const introButton = document.getElementById('game-start');
+    //Initiates the game.
+    document.getElementById('game-start').addEventListener('click', () => {
+        startGame();
+    });
 
-//Initiates the game.
-introButton.addEventListener('click', (e) => {
-    startGame();
-});
+    document.getElementById('game-instructions').addEventListener('click', () => {
+        displayInstruction();
+    });
 
-const startGame = () => {
-    //Hides intro screen
-    hideIntroModal();
+    const startGame = () => {
 
-    //Rounds up between 1 and 10 seconds
-    let milliseconds = Math.ceil(Math.random() * 10000);
+        //Hides intro screen
+        hideIntroModal();
+
+        //Event handlers if user is too early.
+        document.getElementById('one').addEventListener('click', playerOneEarlyClickHandler);
+        document.getElementById('two').addEventListener('click', playerTwoEarlyClickHandler);
+        document.addEventListener('keydown', typedEarlyTimeHandler);
+
+        //Rounds up between 1 and 10 seconds for random amount of seconds between 1 and 10.
+        let milliseconds = Math.ceil(Math.random() * 10000);
 
 
-    //Executes based on milliseconds
-    setTimeout(() => {
+        //Executes based on milliseconds
+        setTimeout(() => {
+            if (boardWillReact) {
+                //Removal of "too early" event handlers.
+                document.getElementById('one').removeEventListener('click', playerOneEarlyClickHandler);
+                document.getElementById('two').removeEventListener('click', playerTwoEarlyClickHandler);
+                document.removeEventListener('keydown', typedEarlyTimeHandler);
 
-        sides[0].style.backgroundColor = 'blue';
-        sides[1].style.backgroundColor = 'red';
+                //UI update to let users know they can react.
+                sides[0].style.backgroundColor = 'blue';
+                sides[1].style.backgroundColor = 'red';
 
-        document.getElementById('one').addEventListener('click', playerOneClickHandler);
-        document.getElementById('two').addEventListener('click', playerTwoClickHandler);
+                //Creates event handlers for users to react.
+                document.getElementById('one').addEventListener('click', playerOneClickHandler);
+                document.getElementById('two').addEventListener('click', playerTwoClickHandler);
+                document.addEventListener('keydown', typedOnTimeHandler);
+            }
+        }, milliseconds);
 
-        console.log(`Score 1: ${score1} and Score 2: ${score2}`);
-    }, milliseconds);
+        let sides = document.querySelectorAll('.side');
+    }
 
-    let sides = document.querySelectorAll('.side');
-}
+    //START EVENT HANDLERS
+    //Too early handlers
 
-const playerOneClickHandler = () => {
-    score1++;
-    displayWinner(1);
-    console.log(`Player One wins! Score is ${score1}`);
-}
+    const playerOneEarlyClickHandler = () => {
+        boardWillReact = false;
+        score2++;
+        displayEarlyWinner(1);
+    }
 
-const playerTwoClickHandler = () => {
-    score2++;
-    console.log(`Player Two wins! Score is ${score2}`);
-    displayWinner(2);
-}
+    const playerTwoEarlyClickHandler = () => {
+        boardWillReact = false;
+        score1++;
+        displayEarlyWinner(2);
+    }
 
-const hideIntroModal = () => {
-    document.getElementById('modal-intro').style.display = 'none';
-}
+    const typedEarlyTimeHandler = (e) => {
+        if (e.keyCode === 76) {
+            boardWillReact = false;
+            score1++;
+            displayEarlyWinner(2);
+        } else if (e.keyCode === 65) {
+            boardWillReact = false;
+            score2++;
+            displayEarlyWinner(1);
+        }
 
-const hideResultsModal = () => {
-    document.getElementById('results-board').style.display = 'none';
-}
+    }
 
-const displayWinner = num => {
-    const resultsModal = document.getElementById('results-board');
+    //On time handlers
+    const typedOnTimeHandler = (e) => {
+        if (e.keyCode === 65) {
+            score1++;
+            displayWinner(1);
+        } else if (e.keyCode === 76) {
+            score2++;
+            displayWinner(2);
+        }
+    }
 
-    resultsModal.style.display = 'flex';
-    resultsModal.innerHTML = `
+    const playerOneClickHandler = () => {
+        score1++;
+        displayWinner(1);
+    }
+
+    const playerTwoClickHandler = () => {
+        score2++;
+        displayWinner(2);
+    }
+    //END EVENT HANDLERS
+
+
+    const hideIntroModal = () => {
+        document.getElementById('modal-intro').style.display = 'none';
+    }
+
+    const hideResultsModal = () => {
+        document.getElementById('results-board').style.display = 'none';
+    }
+
+
+    //Displays winner if executed after page changes color.
+    const displayWinner = num => {
+        const resultsModal = document.getElementById('results-board');
+
+        resultsModal.style.display = 'flex';
+        resultsModal.innerHTML = `
     <div class="modal">
         <div class="modal-component">
             <h1>Player ${num} Wins!</h1>
             <h3>Player 1 Score: ${score1} | Player 2 Score: ${score2}</h3>
         </div>
-        <div id="initiate-round-btn" class="modal-component">
-            <h2>Play Again!</h2>
+        <div class="modal-component">
+            <h2 id="initiate-round-btn">Play Again!</h2>
         </div>
     </div>`;
-    document.getElementById('initiate-round-btn').addEventListener('click', e => {
-        boardReset();
-        startGame();
-    });
-}
+        document.getElementById('one').removeEventListener('click', playerOneClickHandler);
+        document.getElementById('two').removeEventListener('click', playerTwoClickHandler);
+        document.removeEventListener('keydown', typedOnTimeHandler);
 
-const boardReset = () => {
-    console.log('reset activated');
-    document.getElementById('one').removeEventListener('click', playerOneClickHandler);
-    document.getElementById('two').removeEventListener('click', playerTwoClickHandler);
-    document.getElementById('one').style.backgroundColor = '#d3d3d3';
-    document.getElementById('two').style.backgroundColor = 'white';
-    hideResultsModal();
+        document.getElementById('initiate-round-btn').addEventListener('click', e => {
+            boardReset();
+            startGame();
+        });
+    }
+
+
+    //Displays winner if executing before page changes color.
+    const displayEarlyWinner = num => {
+        const resultsModal = document.getElementById('results-board');
+        resultsModal.style.display = 'flex';
+        resultsModal.innerHTML = `
+    <div class="modal">
+        <div class="modal-component">
+            <h1>Player ${num} was too early. Other player gets a point!</h1>
+            <h3>Player 1 Score: ${score1} | Player 2 Score: ${score2}</h3>
+        </div>
+        <div class="modal-component">
+            <h2 id="initiate-round-btn">Play Again!</h2>
+        </div>
+    </div>`;
+        document.getElementById('one').removeEventListener('click', playerOneEarlyClickHandler);
+        document.getElementById('two').removeEventListener('click', playerTwoEarlyClickHandler);
+        document.removeEventListener('keydown', typedEarlyTimeHandler);
+
+        document.getElementById('initiate-round-btn').addEventListener('click', e => {
+            boardReset();
+            startGame();
+        });
+    }
+
+    const displayInstruction = () => {
+        hideIntroModal();
+        const resultsModal = document.getElementById('results-board');
+        resultsModal.style.display = 'flex';
+        resultsModal.innerHTML = `
+            <div class="modal">
+                <div class="modal-component">
+                    <h1>How to Play</h1>
+                    <p>Once you press the play button, between one and ten seconds at random, the board will change
+                    color. (One side red, the other side blue.) On smaller devices, play across from each other.</p>
+                    <p>The first player to react by pressing on their respective side on their phone/tablet will get the point!</p>
+                <p>If playing on a laptop or desktop computer, instead of pressing the display, press the letter "A" on your
+                    keyboard for player one. Player two is the letter "L". Think of your keyboard keys as a buzzer!</p>
+                <p>Don't press your side of the screen or your keyboard key too early! If you do, the other player
+                    gets a point.</p>
+                </div>
+                <div class="modal-component">
+                    <h2 id="close-instructions">Play!</h2>
+                </div>
+            </div>`;
+        document.getElementById('close-instructions').addEventListener('click',() => {
+            hideResultsModal();
+            startGame();
+        })
+    }
+
+    //Resets color of the board, sets board behavior back to default. Hides the results modal.
+    const boardReset = () => {
+        boardWillReact = true;
+        document.getElementById('one').style.backgroundColor = '#d3d3d3';
+        document.getElementById('two').style.backgroundColor = 'white';
+        hideResultsModal();
+    }
 }
 
 /*
 TODO:
-- Optimize/organize code. More Separation of Concerns
-- Allow user to set the potential amount of seconds it could take up to for the board to get active.
-- Add logic to remove a point if a user is too early with pressong on their side
-- Implement keyboard events for desktop play
 - Add instructions for users.
 */
+

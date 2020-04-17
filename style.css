@@ -57,6 +57,18 @@ body {
     cursor:pointer;
 }
 
+#game-instructions {
+    color:white;
+    background-color:yellowgreen;
+    text-align:center;
+    display: inline-block;
+    padding: 0.75rem 1rem;
+    border-radius:0.5rem;
+    border: 0.125rem black solid;
+    cursor:pointer;
+    margin-top:0.5rem;
+}
+
 #one {
     background-color: #d3d3d3;
     flex-grow:1;
