@@ -87,5 +87,10 @@ body {
     .container {
         flex-direction: column;
     }
+
+    .modal {
+        height:90%;
+        width:90%;
+    }
 }
 
